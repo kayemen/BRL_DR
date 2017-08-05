@@ -10,13 +10,16 @@ from sklearn import svm
 
 data = pd.DataFrame.from_csv('D:\\Scripts\\BRL\\Data sets\\student_performance\\student-mat.csv', index_col=None, sep=';')
 
-features = list(data.columns[:14]) + list(data.columns[15:])
-class1label = data.columns[14]
+features = list(data.columns[:-1])
+class1label = data.columns[-1]
+# features = list(data.columns[:14]) + list(data.columns[15:])
+# class1label = data.columns[14]
 
 feature_data = data[features]
 target_data = data[class1label]
 # raw_input()
-target_data[target_data > 0] = 1
+target_data[target_data < 15] = 0
+target_data[target_data >= 15] = 1
 # target_data = target_data.map({'L': 0, 'H': 1})
 target_data = np.asarray(target_data)
 print 'Size of dataset:', target_data.shape
@@ -25,7 +28,7 @@ raw_input('Press enter to continue...')
 Xtrain, Xtest, ytrain, ytest = train_test_split(feature_data, target_data)  # split
 
 # train classifier (allow more iterations for better accuracy; use BigDataRuleListClassifier for large datasets)
-model = RuleListClassifier(max_iter=10000, class1label='performs well', verbose=False)
+model = RuleListClassifier(max_iter=10000, class1label='performs well', verbose=False, listlengthprior=6)
 svm_model = svm.SVC(kernel='linear')
 svm_model_2 = svm.SVC(kernel='rbf')
 rf_model = RandomForestClassifier()

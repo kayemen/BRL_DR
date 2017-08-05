@@ -43,7 +43,7 @@ model = RuleListClassifier(max_iter=10000, class1label="diabetes", verbose=True)
 model.fit(Xtrain, ytrain, feature_labels=feature_labels)
 
 print "RuleListClassifier Accuracy:", model.score(Xtest, ytest), "Learned interpretable model:\n", model
-# print "RandomForestClassifier Accuracy:", RandomForestClassifier().fit(Xtrain, ytrain).score(Xtest, ytest)
+print "RandomForestClassifier Accuracy:", RandomForestClassifier().fit(Xtrain, ytrain).score(Xtest, ytest)
 """
 **Output:**
 RuleListClassifier Accuracy: 0.776041666667 Learned interpretable model:

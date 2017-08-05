@@ -8,56 +8,55 @@ import pandas as pd
 from sklearn.model_selection import cross_val_score
 from sklearn import svm
 
-data = pd.DataFrame.from_csv('D:\\Scripts\\BRL\\Data sets\\uci_mammo_data.csv', index_col=None)
+data = pd.DataFrame.from_csv('D:\\Scripts\\BRL\\Data sets\\turkiye-student-evaluation_generic.csv', index_col=None, sep=',')
 
-features = data.columns[:-1]
-class1label = data.columns[-1]
+features = list(data.columns[:2]) + list(data.columns[3:])
+class1label = data.columns[2]
 
 feature_data = data[features]
 target_data = data[class1label]
-
+# raw_input()
+target_data[target_data > 1] = 1
+# target_data = target_data.map({'L': 0, 'H': 1})
+print target_data.head(100)
 target_data = np.asarray(target_data)
-print target_data.shape
-# raw_input('Press enter to continue...')
+print 'Size of dataset:', target_data.shape
+raw_input('Press enter to continue...')
 
 Xtrain, Xtest, ytrain, ytest = train_test_split(feature_data, target_data)  # split
 
 # train classifier (allow more iterations for better accuracy; use BigDataRuleListClassifier for large datasets)
-model = RuleListClassifier(max_iter=10000, class1label=class1label, verbose=False)
+model = RuleListClassifier(max_iter=10000, class1label='performs well', verbose=False)
 svm_model = svm.SVC(kernel='linear')
 svm_model_2 = svm.SVC(kernel='rbf')
 rf_model = RandomForestClassifier()
-# model.fit(Xtrain, ytrain,
-#   feature_labels=features,
-#   undiscretized_features=features
-#   )
 
 print '*' * 80
 # print "RuleListClassifier Accuracy:", model.score(Xtest, ytest), "Learned interpretable model:\n", model
 # print "RandomForestClassifier Accuracy:", RandomForestClassifier().fit(Xtrain, ytrain).score(Xtest, ytest)
 
-num_partitions = 10
+num_partitions = 20
 
 scores = cross_val_score(model, feature_data, target_data, cv=num_partitions)
 print 'BRL accuracy'
 print scores
 print 'BRL average accuracy'
 print '%f (+/- %f)' % (np.mean(scores), np.std(scores))
-model.fit(Xtrain, ytrain,
-  feature_labels=features)
-print 'Rules\n', model
+print 'Rules:'
+model.fit(Xtrain, ytrain, feature_labels=features)
+print model
 
-svm_scores = cross_val_score(svm_model, feature_data, target_data, cv=num_partitions)
-print 'SVM accuracy (linear)'
-print svm_scores
-print 'SVM average accuracy'
-print '%f (+/- %f)' % (np.mean(svm_scores), np.std(svm_scores))
-
-svm_scores_2 = cross_val_score(svm_model_2, feature_data, target_data, cv=num_partitions)
-print 'SVM accuracy (rbf)'
-print svm_scores_2
-print 'SVM average accuracy'
-print '%f (+/- %f)' % (np.mean(svm_scores_2), np.std(svm_scores_2))
+# svm_scores = cross_val_score(svm_model, feature_data, target_data, cv=num_partitions)
+# print 'SVM accuracy (linear)'
+# print svm_scores
+# print 'SVM average accuracy'
+# print '%f (+/- %f)' % (np.mean(svm_scores), np.std(svm_scores))
+#
+# svm_scores_2 = cross_val_score(svm_model_2, feature_data, target_data, cv=num_partitions)
+# print 'SVM accuracy (rbf)'
+# print svm_scores_2
+# print 'SVM average accuracy'
+# print '%f (+/- %f)' % (np.mean(svm_scores_2), np.std(svm_scores_2))
 
 rf_scores = cross_val_score(rf_model, feature_data, target_data, cv=num_partitions)
 print 'Random forest accuracy (rbf)'
